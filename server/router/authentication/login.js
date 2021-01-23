@@ -13,6 +13,9 @@ module.exports = function loginRoutes(router, { db }) {
 				.then((isValid => (isValid ? id : null))));
 	}
 
+	const nickValidator = Yup.string().max(32).required();
+	const passwordValidator = Yup.string().min(6).required();
+
 	/**
 	 * POST /user
 	 */
@@ -20,8 +23,8 @@ module.exports = function loginRoutes(router, { db }) {
 		'/user',
 
 		validate(Yup.object().shape({
-			nick: Yup.string().max(32).required(),
-			password: Yup.string().min(6).required(),
+			nick: nickValidator,
+			password: passwordValidator,
 		}).required()),
 
 		validateCredentials,
@@ -38,13 +41,14 @@ module.exports = function loginRoutes(router, { db }) {
 
 	/**
 	 * POST /irc/user
+	 * Authenticates a user authenticating via Oregeno IRCD
 	 */
 	router.post(
 		'/irc/user',
 
 		validate(Yup.object().shape({
-			accountName: Yup.string().max(32).required(),
-			passphrase: Yup.string().min(6).required(),
+			accountName: nickValidator,
+			passphrase: passwordValidator,
 		}).required()),
 
 		validateCredentials,
