@@ -1,5 +1,6 @@
 'use strict';
 
+if (!process.env.POSTGRES_USER) require('dotenv').config(); // eslint-disable-line global-require
 const stringcase = require('knex-stringcase');
 
 module.exports = stringcase({

@@ -10,5 +10,9 @@ module.exports = function createRouter(deps) {
 
 	authentication(router, deps);
 
+	router.use((req, res) => {
+		res.sendStatus(404);
+	});
+
 	return router;
 };

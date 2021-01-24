@@ -1,30 +1,35 @@
 'use strict';
 
-const Yup = require('yup');
-const argon2 = require('argon2');
+const yup = require('yup');
 const validate = require('../../middleware/validate');
+const { User } = require('../../../models');
 
-module.exports = function registerRoute(router, { db }) {
+module.exports = function registerRoute(router) {
 	/**
-	 * POST /register
+	 * POST /user
 	 * Registers a new user.
 	 */
 	router.post(
-		'/register',
+		'/user',
 
-		validate(Yup.object().shape({
-			nick: Yup.string().max(32).required(),
-			password: Yup.string().min(6).required(),
+		validate(yup.object().shape({
+			nick: yup.string().max(32).required(),
+			password: yup.string().min(6).required(),
 		}).required()),
 
-		async (req, res) => db('users').insert({
-			nick: req.body.nick,
-			password: await argon2.hash(req.body.password),
-		})
+		async (req, res) => User.create(req.body)
+			.then(() => {
+				res.sendStatus(201);
+			})
 			.catch((ex) => {
-				if (!ex.message.includes('users_email_unique')) return Promise.reject(ex);
+				if (!ex.message.includes('users_nick_unique')) return Promise.reject(ex);
 				res.status(400).json({
-					errors: { nick: 'Nick is already in use' },
+					errors: {
+						body: [{
+							propertyPath: 'nick',
+							message: 'Nick is already in use',
+						}],
+					},
 				});
 			}),
 	);
