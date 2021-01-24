@@ -9,6 +9,7 @@
     "test": "npm run test:eslint && npm run test:jest",
     "test:eslint": "eslint *.js server/**/*.js tests/**/*.js migrations/**/*.js",
     "test:jest": "NODE_ENV=test jest -i",
+    "test:jest:debug": "NODE_ENV=test DEBUG=true node --inspect-brk node_modules/.bin/jest -i",
     "test:jest:watch": "npm run test:jest -- --watchAll",
     "setup": "npm run migrate:latest",
     "migrate:latest": "knex migrate:latest"

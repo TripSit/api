@@ -1,26 +1,23 @@
 'use strict';
 
 const yup = require('yup');
-const argon2 = require('argon2');
 const validate = require('../../middleware/validate');
+const User = require('../../../models/user');
 
-module.exports = function loginRoutes(router, { db }) {
-	async function validateCredentials(nick, password) {
-		return db('users')
-			.select('id', 'password')
-			.where('nick', nick)
-			.then(({ id, password: hash }) => argon2.verify(hash, password)
-				.then((isValid => (isValid ? id : null))));
+module.exports = function loginRoutes(router) {
+	async function validateCredentials(req, res, next) {
+		const user = await User.query().findOne({ nick: req.body.nick });
+		if (await user.validatePassword(req.body.password)) next();
 	}
 
 	const nickValidator = yup.string().max(32).required();
 	const passwordValidator = yup.string().min(6).required();
 
 	/**
-	 * POST /user
+	 * POST /login
 	 */
 	router.post(
-		'/user',
+		'/login',
 
 		validate(yup.object().shape({
 			nick: nickValidator,
@@ -30,7 +27,7 @@ module.exports = function loginRoutes(router, { db }) {
 		validateCredentials,
 
 		async (req, res) => {
-			const uid = await validateCredentials(req.body.nick, req.body.password);
+			let uid;
 			if (!uid) res.sendStatus(401);
 			else {
 				req.session.uid = uid;
@@ -40,11 +37,11 @@ module.exports = function loginRoutes(router, { db }) {
 	);
 
 	/**
-	 * POST /irc/user
+	 * POST /irc/login
 	 * Authenticates a user authenticating via Oregeno IRCD
 	 */
 	router.post(
-		'/irc/user',
+		'/irc/login',
 
 		validate(yup.object().shape({
 			accountName: nickValidator,

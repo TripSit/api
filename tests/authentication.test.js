@@ -3,12 +3,8 @@
 const { knex, createTestServer } = require('./utils');
 
 describe('register', () => {
-	async function removeTestUsers() {
-		return knex('users').del().where('nick', 'validUser');
-	}
-
-	beforeAll(removeTestUsers);
-	afterAll(removeTestUsers);
+	beforeAll(async () => knex('users').truncate());
+	afterAll(async () => knex('users').truncate());
 
 	it('requires a valid nick and password', async () => createTestServer()
 		.post('/user')
@@ -75,12 +71,36 @@ describe('register', () => {
 			})
 			.expect(201);
 
-		const nickCount = await knex('users').where('nick', 'validUser').count();
+		const nickCount = await knex('users')
+			.where('nick', 'validUser')
+			.count()
+			.first()
+			.then(({ count }) => parseInt(count, 10));
 		expect(nickCount).toBe(1);
 	});
 
 	it('hashes the password', async () => {
-		const passwordCount = await knex('users').where('passwordHash', 'P@ssw0rd').count();
+		const passwordCount = await knex('users')
+			.where('passwordHash', 'P@ssw0rd')
+			.count()
+			.then(({ count }) => count);
 		expect(passwordCount).not.toBe('P@ssw0rd');
 	});
+
+	it('cannot use a nick if it\'s alrady in use', async () => createTestServer()
+		.post('/user')
+		.send({
+			nick: 'validUser',
+			password: 'P@ssw0rd',
+		})
+		.expect('content-type', /application\/json/)
+		.expect(400)
+		.then(res => expect(res.body).toStrictEqual({
+			errors: {
+				body: [{
+					propertyPath: 'nick',
+					message: 'Nick is already in use',
+				}],
+			},
+		})));
 });
