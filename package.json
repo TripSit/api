@@ -17,6 +17,7 @@
     "express-promise-router": "^4.0.1",
     "knex": "^0.21.16",
     "knex-stringcase": "^1.4.3",
+    "objection": "^2.2.8",
     "pg": "^8.5.1",
     "winston": "^3.3.3",
     "yup": "^0.32.8"
