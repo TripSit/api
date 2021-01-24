@@ -3,7 +3,10 @@
 module.exports = {
 	root: true,
 	extends: 'airbnb-base',
-	parserOptions: { sourceType: 'script' },
+	parserOptions: {
+		sourceType: 'script',
+		ecmaVersion: 2020,
+	},
 	env: { node: true },
 	rules: {
 		strict: [2, 'global'],

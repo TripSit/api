@@ -1,11 +1,16 @@
 'use strict';
 
-module.exports = function validateMiddleware(schema) {
-	return async (req, res) => {
-		const data = req.method === 'GET' ? req.query : req.body;
-		return schema.validate(data).catch(err => {
-			if (err.name !== 'ValidationError') return Promise.reject(err);
-			res.status(400).json({ errors: err.errors });
-		});
-	};
+const { expressYupMiddleware } = require('express-yup-middleware');
+
+module.exports = function validateMiddleware(yupSchema, on = 'body') {
+	return expressYupMiddleware({
+		schemaValidator: {
+			schema: {
+				[on]: {
+					yupSchema,
+					validateOptions: { abortEarly: false },
+				},
+			},
+		},
+	});
 };

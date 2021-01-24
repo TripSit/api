@@ -1,6 +1,6 @@
 'use strict';
 
-const Yup = require('yup');
+const yup = require('yup');
 const argon2 = require('argon2');
 const validate = require('../../middleware/validate');
 
@@ -13,8 +13,8 @@ module.exports = function loginRoutes(router, { db }) {
 				.then((isValid => (isValid ? id : null))));
 	}
 
-	const nickValidator = Yup.string().max(32).required();
-	const passwordValidator = Yup.string().min(6).required();
+	const nickValidator = yup.string().max(32).required();
+	const passwordValidator = yup.string().min(6).required();
 
 	/**
 	 * POST /user
@@ -22,7 +22,7 @@ module.exports = function loginRoutes(router, { db }) {
 	router.post(
 		'/user',
 
-		validate(Yup.object().shape({
+		validate(yup.object().shape({
 			nick: nickValidator,
 			password: passwordValidator,
 		}).required()),
@@ -46,7 +46,7 @@ module.exports = function loginRoutes(router, { db }) {
 	router.post(
 		'/irc/user',
 
-		validate(Yup.object().shape({
+		validate(yup.object().shape({
 			accountName: nickValidator,
 			passphrase: passwordValidator,
 		}).required()),

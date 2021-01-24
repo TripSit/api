@@ -21,6 +21,9 @@ module.exports = function registerRoute(router, { db }) {
 			nick: req.body.nick,
 			password: await argon2.hash(req.body.password),
 		})
+			.then(() => {
+				res.sendStatus(201);
+			})
 			.catch((ex) => {
 				if (!ex.message.includes('users_email_unique')) return Promise.reject(ex);
 				res.status(400).json({
