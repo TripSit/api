@@ -5,13 +5,14 @@ const knex = require('knex');
 const knexConfig = require('../knexfile');
 const createServer = require('../server');
 
-module.exports = function setup() {
+exports.createTestServer = function createTestServer() {
 	return supertest(createServer({
+		db: knex(knexConfig),
 		logger: {
+			log: jest.fn(),
 			info: jest.fn(),
+			warn: jest.fn(),
 			error: jest.fn(),
 		},
-		db: knex(knexConfig),
-	}))
-		.set('Accepts', 'application/json');
+	}));
 };
