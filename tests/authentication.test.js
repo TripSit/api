@@ -2,7 +2,7 @@
 
 const { knex, createTestServer } = require('./utils');
 
-describe('register', () => {
+describe('POST /user', () => {
 	beforeAll(async () => knex('users').truncate());
 	afterAll(async () => knex('users').truncate());
 
@@ -100,6 +100,71 @@ describe('register', () => {
 				body: [{
 					propertyPath: 'nick',
 					message: 'Nick is already in use',
+				}],
+			},
+		})));
+});
+
+describe('POST /login', () => {
+	beforeAll(async () => createTestServer()
+		.post('/user')
+		.send({
+			nick: 'validUser',
+			password: 'P@ssw0rd',
+		}));
+
+	afterAll(async () => knex('users').truncate());
+
+	it('requires a valid nick and password', async () => createTestServer()
+		.post('/login')
+		.send()
+		.expect('content-type', /application\/json/)
+		.expect(400)
+		.then(res => expect(res.body).toStrictEqual({
+			errors: {
+				body: [
+					{
+						propertyPath: 'nick',
+						message: 'Required',
+					},
+					{
+						propertyPath: 'password',
+						message: 'Required',
+					},
+				],
+			},
+		})));
+
+	it('nick cannot exceed 32 characters', async () => createTestServer()
+		.post('/login')
+		.send({
+			nick: 'thisisanunreasonblylongnickoreganodoesnotsupportlol',
+			password: 'P@ssw0rd',
+		})
+		.expect('content-type', /application\/json/)
+		.expect(400)
+		.then(res => expect(res.body).toStrictEqual({
+			errors: {
+				body: [{
+					propertyPath: 'nick',
+					message: 'nick must be at most 32 characters',
+				}],
+			},
+		})));
+
+	it('password cannot be less than 6 characters', async () => createTestServer()
+		.post('/login')
+		.send({
+			nick: 'burgerbob',
+			password: 'lol',
+		})
+		.expect('content-type', /application\/json/)
+		.expect(400)
+		.then(res => expect(res.body).toStrictEqual({
+			errors: {
+				body: [{
+					propertyPath: 'password',
+					message: 'password must be at least 6 characters',
 				}],
 			},
 		})));
