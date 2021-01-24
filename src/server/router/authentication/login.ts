@@ -1,12 +1,11 @@
-'use strict';
+import { Router } from 'express';
+import Yup from 'yup';
+import argon2 from 'argon2';
+import validate from '../../middleware/validate';
 
-const Yup = require('yup');
-const argon2 = require('argon2');
-const validate = require('../../middleware/validate');
-
-module.exports = function loginRoutes(router, { db }) {
-	async function validateCredentials(nick, password) {
-		return db('users')
+export default function loginRoutes(router: Router, { knex }: ServerDependencies) {
+	async function validateCredentials(nick: string, password: string): Promise<string | null> {
+		return knex('users')
 			.select('id', 'password')
 			.where('nick', nick)
 			.then(({ id, password: hash }) => argon2.verify(hash, password)

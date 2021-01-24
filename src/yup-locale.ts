@@ -1,8 +1,4 @@
-/* eslint no-template-curly-in-string: 0 */
-
-'use strict';
-
-const { setLocale } = require('yup');
+import { setLocale } from 'yup';
 
 setLocale({
 	mixed: { required: 'Required' },

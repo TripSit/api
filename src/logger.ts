@@ -1,9 +1,8 @@
-'use strict';
+import path from 'path';
+import winston, { Logger } from 'winston';
+import { LOG_PATH } from './env'
 
-const path = require('path');
-const winston = require('winston');
-
-module.exports = function createLogger() {
+export default function createLogger(): Logger {
 	const logger = winston.createLogger({
 		format: winston.format.combine(
 			winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
@@ -12,11 +11,11 @@ module.exports = function createLogger() {
 		),
 		transports: [
 			new winston.transports.File({
-				filename: path.join(process.env.LOG_PATH, 'error.log'),
+				filename: path.join(LOG_PATH, 'error.log'),
 				level: 'error',
 			}),
 			new winston.transports.File({
-				filename: path.join(process.env.LOG_PATH, 'combined.log'),
+				filename: path.join(LOG_PATH, 'combined.log'),
 			}),
 		],
 	});
