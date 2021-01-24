@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node .",
+    "start": "NODE_ENV=production node .",
     "dev": "NODE_ENV=development nodemon --inspect .",
     "test": "NODE_ENV=test jest"
   },
@@ -15,6 +15,7 @@
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-promise-router": "^4.0.1",
+    "fake-tag": "^2.0.0",
     "knex": "^0.21.16",
     "knex-stringcase": "^1.4.3",
     "pg": "^8.5.1",

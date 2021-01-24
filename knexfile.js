@@ -1,5 +1,6 @@
 'use strict';
 
+require('dotenv').config();
 const stringcase = require('knex-stringcase');
 
 module.exports = stringcase({
