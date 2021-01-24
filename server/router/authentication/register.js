@@ -2,7 +2,7 @@
 
 const yup = require('yup');
 const validate = require('../../middleware/validate');
-const User = require('../../../models/user');
+const { User } = require('../../../models');
 
 module.exports = function registerRoute(router) {
 	/**
