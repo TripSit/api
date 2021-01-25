@@ -5,7 +5,6 @@ const { Model } = require('objection');
 const knexConfig = require('../knexfile');
 
 // Export models
-exports.DrugCategory = require('./drug-category');
 exports.DrugClass = require('./drug-class');
 exports.DrugDose = require('./drug-dose');
 exports.DrugName = require('./drug-name');
