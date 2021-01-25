@@ -2,6 +2,8 @@
 
 const { gql } = require('apollo-server-express');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
+const { UnsignedFloatResolver, DateTimeResolver } = require('graphql-scalars');
+const drug = require('./drug');
 
 const baseTypes = gql`
 	type Query {
@@ -11,14 +13,19 @@ const baseTypes = gql`
 	type Mutation {
 		_empty: Boolean
 	}
+
+	scalar UnsignedFloatResolver
+	scalar DateTime
 `;
 
 module.exports = function createSchema() {
 	return makeExecutableSchema({
-		typeDefs: [baseTypes],
+		typeDefs: [baseTypes, drug.typeDefs],
 		resolvers: {
 			Query: {},
 			Mutation: {},
+			UnsignedFloat: UnsignedFloatResolver,
+			DateTime: DateTimeResolver,
 		},
 	});
 };

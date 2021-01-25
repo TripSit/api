@@ -31,7 +31,13 @@ exports.up = async function up(knex) {
 			.defaultTo(knex.raw('uuid_generate_v4()'));
 
 		table
-			.uuid('drugClassId')
+			.uuid('psychoactiveClassId')
+			.references('id')
+			.inTable('drugClasses')
+			.notNullable();
+
+		table
+			.uuid('chemicalClassId')
 			.references('id')
 			.inTable('drugClasses')
 			.notNullable();
@@ -90,7 +96,7 @@ exports.up = async function up(knex) {
 			.defaultTo(knex.fn.now());
 	});
 
-	return knex.schema.createTable('drugNames', table => {
+	await knex.schema.createTable('drugNames', table => {
 		table
 			.uuid('id')
 			.primary()
@@ -116,9 +122,41 @@ exports.up = async function up(knex) {
 			enumName: 'drugNameType',
 		});
 	});
+
+	return knex.schema.createTable('userDrugDoses', table => {
+		table
+			.uuid('id')
+			.primary()
+			.notNullable()
+			.defaultTo(knex.raw('uuid_generate_v4()'));
+
+		table
+			.uuid('userId')
+			.references('id')
+			.inTable('users')
+			.notNullable();
+
+		table
+			.uuid('drugId')
+			.references('id')
+			.inTable('drugs');
+
+		table.text('drugTaken').notNullable();
+
+		table
+			.timestamp('updatedAt')
+			.notNullable()
+			.defaultTo(knex.fn.now());
+
+		table
+			.timestamp('createdAt')
+			.notNullable()
+			.defaultTo(knex.fn.now());
+	});
 };
 
 exports.down = async function down(knex) {
+	await knex.schema.dropTableIfExists('userDrugDoses');
 	await knex.schema.dropTableIfExists('drugNames');
 	await knex.schema.dropTableIfExists('drugDoses');
 	await knex.schema.dropTableIfExists('drugs');

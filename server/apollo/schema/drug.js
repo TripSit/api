@@ -11,20 +11,40 @@ exports.typeDefs = gql`
 		id: ID!
 		name: String!
 		summary: String!
-		roa: [RouteOfAdministration!]!
-		updatedAt: String!
-		createdAt: String!
+		psychoactiveClass: DrugClass!
+		chemicalClass: DrugClass!
+		roas: [RouteOfAdministration!]!
+		updatedAt: DateTime!
+		createdAt: DateTime!
 	}
 
-	enum RouteOfAdministration {
-		ORAL
-		INSUFFLATION
-		INHALATION
-		RECTAL
-		TOPICAL
-		BUCCAL
-		SI # Subcutanious injection
-		IM # Intramuscular injection
-		IV # Intravenious injection
+	type DrugClass {
+		id: ID!
+		name: String!
+		description: String!
 	}
+
+	type DrugRouteOfAdministration {
+		id: ID!
+		route: RouteOfAdministration!
+		thresholdMg: UnsignedFloat
+		lightMg: UnsignedFloat
+		commonMg: UnsignedFloat
+		strongMg: UnsignedFloat
+		heavyMg: UnsignedFloat
+		ld50MgPerKg: UnsignedFloat
+		updatedAt: DateTime!
+	}
+
+enum RouteOfAdministration {
+	ORAL
+	INSUFFLATION
+	INHALATION
+	RECTAL
+	TOPICAL
+	BUCCAL
+	SI # Subcutanious injection
+	IM # Intramuscular injection
+	IV # Intravenious injection
+}
 `;
