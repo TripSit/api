@@ -5,10 +5,10 @@ const { Model } = require('objection');
 const knexConfig = require('../knexfile');
 
 // Export models
+exports.Drug = require('./drug');
 exports.DrugClass = require('./drug-class');
 exports.DrugDose = require('./drug-dose');
 exports.DrugName = require('./drug-name');
-exports.Drug = require('./drug');
 exports.User = require('./user');
 
 // Knex initialization

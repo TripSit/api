@@ -74,8 +74,9 @@ exports.up = async function up(knex) {
 			'INHALATION',
 			'RECTAL',
 			'TOPICAL',
+			'SUBLINGUAL',
 			'BUCCAL',
-			'SI',
+			'SC',
 			'IM',
 			'IV',
 		], {
@@ -83,6 +84,7 @@ exports.up = async function up(knex) {
 			enumName: 'route_of_administration',
 		});
 
+		// Doses
 		table.float('thresholdMg');
 		table.float('lightMg');
 		table.float('commonMg');
@@ -90,8 +92,23 @@ exports.up = async function up(knex) {
 		table.float('heavyMg');
 		table.float('ld50MgPerKg');
 
+		// Durations (TODO: make time deltas)
+		table.integer('onsetMin').unsigned();
+		table.integer('onsetMax').unsigned();
+		table.integer('peakMin').unsigned();
+		table.integer('peakMax').unsigned();
+		table.integer('offsetMin').unsigned();
+		table.integer('offsetMax').unsigned();
+		table.integer('afterEffectsMin').unsigned();
+		table.integer('afterEffectsMax').unsigned();
+
 		table
 			.timestamp('updatedAt')
+			.notNullable()
+			.defaultTo(knex.fn.now());
+
+		table
+			.timestamp('createdAt')
 			.notNullable()
 			.defaultTo(knex.fn.now());
 	});

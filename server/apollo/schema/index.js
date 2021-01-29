@@ -1,31 +1,32 @@
 'use strict';
 
-const { gql } = require('apollo-server-express');
 const { makeExecutableSchema } = require('@graphql-tools/schema');
-const { UnsignedFloatResolver, DateTimeResolver } = require('graphql-scalars');
+const base = require('./base');
 const drug = require('./drug');
 
-const baseTypes = gql`
-	type Query {
-		_empty: Boolean
-	}
-
-	type Mutation {
-		_empty: Boolean
-	}
-
-	scalar UnsignedFloatResolver
-	scalar DateTime
-`;
-
 module.exports = function createSchema() {
-	return makeExecutableSchema({
-		typeDefs: [baseTypes, drug.typeDefs],
-		resolvers: {
-			Query: {},
-			Mutation: {},
-			UnsignedFloat: UnsignedFloatResolver,
-			DateTime: DateTimeResolver,
+	return makeExecutableSchema([base, drug].reduce(
+		(acc, { typeDefs, resolvers }) => ({
+			typeDefs: acc.concat(typeDefs),
+			resolvers: {
+				...acc.resolvers,
+				...resolvers,
+				Query: {
+					...acc.resolvers.Query,
+					...resolvers,
+				},
+				Mutation: {
+					...acc.resolvers.Mutation,
+					...resolvers.Mutation,
+				},
+			},
+		}),
+		{
+			typeDefs: [],
+			resolvers: {
+				Query: {},
+				Mutation: {},
+			},
 		},
-	});
+	));
 };

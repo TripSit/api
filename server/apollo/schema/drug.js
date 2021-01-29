@@ -33,18 +33,43 @@ exports.typeDefs = gql`
 		strongMg: UnsignedFloat
 		heavyMg: UnsignedFloat
 		ld50MgPerKg: UnsignedFloat
+		# Durations measured in seconds
+		onset: DrugDurationRange
+		peak: DrugDurationRange
+		offset: DrugDurationRange
+		afterEffects: DrugDurationRange
 		updatedAt: DateTime!
 	}
 
-enum RouteOfAdministration {
-	ORAL
-	INSUFFLATION
-	INHALATION
-	RECTAL
-	TOPICAL
-	BUCCAL
-	SI # Subcutanious injection
-	IM # Intramuscular injection
-	IV # Intravenious injection
-}
+	enum RouteOfAdministration {
+		ORAL
+		INSUFFLATION
+		INHALATION
+		RECTAL
+		TOPICAL
+		SUBLINGUAL
+		BUCCAL
+		SC # Subcutanious injection
+		IM # Intramuscular injection
+		IV # Intravenious injection
+	}
+
+	type DrugDurationRange {
+		min: UnsignedInt
+		max: UnsignedInt
+	}
 `;
+
+exports.resolvers = {
+	Query: {
+		async drug(_, { id }, { dataSources }) {
+			return dataSources.db.Drug.query().findOne({ id });
+		},
+	},
+
+	Drug: {
+		async roas(drug, args, { dataSources }) {
+			return dataSources.db.DrugClass.query().find({ drugId: drug.id });
+		},
+	},
+};
