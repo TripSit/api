@@ -8,27 +8,27 @@ module.exports = class Drug extends Model {
 
 	static relationMappings = {
 		names: {
-			relation: Model.BelongsToOneRelation,
+			relation: Model.HasManyRelation,
 			modelClass: path.join(__dirname, 'drug-name'),
 			join: {
-				from: 'users.id',
-				to: 'drug_names.drug_id',
+				from: 'drugs.id',
+				to: 'drug_names.drugId',
 			},
 		},
-		doses: {
-			relation: Model.BelongsToOneRelation,
-			modelClass: path.join(__dirname, 'drug-dose'),
+		routesOfAdministration: {
+			relation: Model.HasManyRelation,
+			modelClass: path.join(__dirname, 'drug-route-of-administration'),
 			join: {
-				from: 'users.id',
-				to: 'drug_doses.drug_id',
+				from: 'drugs.id',
+				to: 'drugRoutesOfAdministration.drugId',
 			},
 		},
 		classes: {
-			relation: Model.BelongsToOneRelation,
+			relation: Model.HasManyRelation,
 			modelClass: path.join(__dirname, 'drug-class'),
 			join: {
-				from: 'users.id',
-				to: 'drug_classes.drug_id',
+				from: 'drugs.id',
+				to: 'drugClasses.drugId',
 			},
 		},
 	};

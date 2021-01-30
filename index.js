@@ -2,8 +2,7 @@
 
 require('dotenv').config();
 require('./yup-locale');
-const knex = require('knex');
-const knexConfig = require('./knexfile');
+const initializeDatabase = require('./db');
 const createServer = require('./server');
 const createLogger = require('./logger');
 
@@ -11,7 +10,7 @@ const logger = createLogger();
 
 const server = createServer({
 	logger,
-	db: knex(knexConfig),
+	knex: initializeDatabase(),
 });
 
 const port = process.env.HTTP_PORT ? parseInt(process.env.HTTP_PORT, 10) : 3000;

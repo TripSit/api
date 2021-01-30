@@ -3,16 +3,17 @@
 const path = require('path');
 const { Model } = require('objection');
 
-module.exports = class DrugName extends Model {
-	static tableName = 'drugNames';
+// Route of Administration
+module.exports = class Roa extends Model {
+	static tableName = 'drugRoutesOfAdministration';
 
 	static relationMappings = {
 		drug: {
 			relation: Model.BelongsToOneRelation,
 			modelClass: path.join(__dirname, 'drug'),
 			join: {
-				from: 'drugNames.drugId',
-				to: 'drugs.id',
+				from: 'drugRoutesOfAdministration.drugId',
+				to: 'drug.id',
 			},
 		},
 	};
