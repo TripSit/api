@@ -1,11 +1,19 @@
 'use strict';
 
-const { ApolloServer } = require('apollo-server-express');
+const express = require('express');
+const { graphqlConnect } = require('apollo-server-express');
+const createSchema = require('./schema');
+const dataSources = require('./data-sources');
 
-module.exports = function applyApollo(app) {
-	const apollo = new ApolloServer();
+module.exports = function createApollo(deps) {
+	const router = express.Router();
+	router.use(express.json());
 
-	apollo.applyMiddleware({ app });
+	router.use('/graphql', graphqlConnect({
+		schema: createSchema(deps),
+		context: () => ({}),
+		dataSources: dataSources(deps),
+	}));
 
-	return apollo;
+	return router;
 };

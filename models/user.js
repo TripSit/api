@@ -8,6 +8,18 @@ module.exports = class User extends Model {
 	static tableName = 'users';
 
 	static relationMappings = {
+		roles: {
+			relation: Model.ManyToManyRelation,
+			modelClass: path.join(__dirname, 'role'),
+			join: {
+				from: 'users.id',
+				through: {
+					from: 'userRoles.userId',
+					to: 'userRoles.roleId',
+				},
+				to: 'role.id',
+			},
+		},
 		doses: {
 			relation: Model.HasManyRelation,
 			modelClass: path.join(__dirname, 'user-dose'),

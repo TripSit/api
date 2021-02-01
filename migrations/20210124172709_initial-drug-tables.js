@@ -173,9 +173,9 @@ exports.up = async function up(knex) {
 			.primary();
 
 		table.text('title').notNullable();
-		table.text('url').notNullable();
+		table.text('author');
 		table.text('summary');
-		table.timestamp('publishedOn');
+		table.timestamp('publishedAt');
 
 		table
 			.timestamp('createdAt')

@@ -2,31 +2,33 @@
 
 const { makeExecutableSchema } = require('@graphql-tools/schema');
 const base = require('./base');
+const article = require('./article');
 const drug = require('./drug');
+const user = require('./user');
 
-module.exports = function createSchema() {
-	return makeExecutableSchema([base, drug].reduce(
-		(acc, { typeDefs, resolvers }) => ({
-			typeDefs: acc.concat(typeDefs),
-			resolvers: {
-				...acc.resolvers,
-				...resolvers,
-				Query: {
-					...acc.resolvers.Query,
-					...resolvers,
-				},
-				Mutation: {
-					...acc.resolvers.Mutation,
-					...resolvers.Mutation,
-				},
-			},
-		}),
-		{
-			typeDefs: [],
-			resolvers: {
-				Query: {},
-				Mutation: {},
-			},
-		},
-	));
+const components = [base, article, drug, user];
+
+module.exports = function createSchema({ logger }) {
+	const typeDefs = components
+		.map(component => component.typeDefs)
+		.reduce((acc, typeDef) => acc.concat(typeDef), []);
+
+	const resolvers = components
+		.map(component => component.resolvers)
+		.reduce(
+			(acc, { Query, Mutation, ...xs }) => ({
+				...acc,
+				...xs,
+				Query: { ...acc.Query, ...xs.Query },
+				Mutation: { ...acc.Mutation, ...xs.Mutation },
+			}),
+			{ Query: {}, Mutation: {} },
+		);
+
+	return makeExecutableSchema({
+		typeDefs,
+		resolvers,
+		logger,
+		allowUndefinedInResolve: false,
+	});
 };

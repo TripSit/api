@@ -23,12 +23,24 @@ module.exports = class Drug extends Model {
 				to: 'drugRoutesOfAdministration.drugId',
 			},
 		},
-		classes: {
+		categories: {
 			relation: Model.HasManyRelation,
-			modelClass: path.join(__dirname, 'drug-class'),
+			modelClass: path.join(__dirname, 'drug-category'),
 			join: {
 				from: 'drugs.id',
-				to: 'drugClasses.drugId',
+				to: 'drugCategories.drugId',
+			},
+		},
+		articles: {
+			relation: Model.ManyToManyRelation,
+			modelClass: path.join(__dirname, 'article'),
+			join: {
+				from: 'drugs.id',
+				through: {
+					from: 'drugArticles.drugId',
+					to: 'drugArticles.articleId',
+				},
+				to: 'articles.id',
 			},
 		},
 	};

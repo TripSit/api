@@ -14,6 +14,7 @@ exports.typeDefs = gql`
 		psychoactiveClass: DrugClass!
 		chemicalClass: DrugClass!
 		roas: [RouteOfAdministration!]!
+		articles: [Article!]!
 		updatedAt: DateTime!
 		createdAt: DateTime!
 	}
@@ -69,7 +70,14 @@ exports.resolvers = {
 
 	Drug: {
 		async roas(drug, args, { dataSources }) {
-			return dataSources.db.DrugClass.query().find({ drugId: drug.id });
+			return dataSources.db.Drug.query().find({ drugId: drug.id });
+		},
+
+		async articles(drug, args, { dataSources }) {
+			return dataSources.db.Drug
+				.relatedJoin('articles')
+				.where('drugs.id', drug.id)
+				.select('articles.*');
 		},
 	},
 };
