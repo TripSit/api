@@ -1,14 +1,12 @@
-'use strict';
-
-const express = require('express');
-const Router = require('express-promise-router');
-const authentication = require('./authentication');
+import express from 'express';
+import Router from 'express-promise-router';
+import authentication from './authentication';
 
 module.exports = function createRouter() {
-	const router = Router();
-	router.use(express.json());
+  const router = Router();
+  router.use(express.json());
 
-	authentication(router);
+  authentication(router);
 
-	return router;
+  return router;
 };
