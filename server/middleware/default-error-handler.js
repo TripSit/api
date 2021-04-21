@@ -1,8 +1,8 @@
-export default function createDefaultErrorHandler() {
+export default function createDefaultErrorHandler({ logger }) {
   return (err, req, res, next) => {
     if (res.headersSent) next(err);
     else {
-      console.error(err);
+      logger.error(err);
       res.sendStatus(500);
     }
   };

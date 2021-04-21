@@ -4,7 +4,7 @@ import {
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   POSTGRES_DB,
-} from './env';
+} from './env.js';
 
 export default stringcase({
   client: 'pg',

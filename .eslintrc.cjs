@@ -7,6 +7,7 @@ module.exports = {
   rules: {
     'prefer-destructuring': 0,
     'consistent-return': 0,
+    'import/extensions': 0,
   },
   overrides: [
     {

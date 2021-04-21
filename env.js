@@ -3,6 +3,8 @@ import { config } from 'dotenv';
 
 config();
 
+export const NODE_ENV = process.env.NODE_ENV;
+
 export const HTTP_PORT = parseInt(process.env.HTTP_PORT, 10);
 export const LOG_PATH = path.resolve(process.env.LOG_PATH);
 
