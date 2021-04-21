@@ -9,7 +9,7 @@ export async function up(knex) {
       .primary();
     table.text('nick').notNullable().unique();
     table.specificType('passwordHash', 'CHAR(95)').notNullable();
-    table.string('email', 320);
+    table.string('email', 320).unique();
     table
       .boolean('isEmailVerified')
       .notNullable()
