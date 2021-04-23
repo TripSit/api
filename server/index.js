@@ -1,9 +1,11 @@
-import express from 'express';
-import helmet from 'helmet';
-import router from './router/index.js';
-import defaultErrorHandler from './middleware/default-error-handler.js';
+'use strict';
 
-export default function createServer(deps) {
+const express = require('express');
+const helmet = require('helmet');
+const router = require('./router');
+const defaultErrorHandler = require('./middleware/default-error-handler');
+
+module.exports = function createServer(deps) {
   const server = express();
 
   server.use(helmet());
@@ -11,4 +13,4 @@ export default function createServer(deps) {
   server.use(defaultErrorHandler(deps));
 
   return server;
-}
+};

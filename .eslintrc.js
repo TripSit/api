@@ -4,25 +4,22 @@ module.exports = {
   root: true,
   extends: 'airbnb-base',
   env: { node: true },
+  parserOptions: { sourceType: 'script' },
   rules: {
+    strict: [2, 'global'],
     'prefer-destructuring': 0,
     'consistent-return': 0,
     'import/extensions': 0,
+    'import/prefer-default-export': 0,
   },
   overrides: [
-    {
-      files: ['.eslintrc.js'],
-      parserOptions: { sourceType: 'script' },
-      rules: {
-        strict: [2, 'global'],
-      },
-    },
     {
       files: [
         '**/__tests__/*.js',
         '**/__mocks__/*.js',
         'tests/**/*.spec.js',
         'jest.setup.js',
+        'jest.integration.setup.js',
       ],
       plugins: ['jest'],
       extends: ['plugin:jest/all'],

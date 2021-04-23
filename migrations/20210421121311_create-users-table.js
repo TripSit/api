@@ -1,4 +1,6 @@
-export async function up(knex) {
+'use strict';
+
+exports.up = async function up(knex) {
   await knex.raw('CREATE EXTENSION IF NOT EXISTS "uuid-ossp";');
 
   return knex.schema.createTable('users', (table) => {
@@ -19,9 +21,9 @@ export async function up(knex) {
       .notNullable()
       .defaultTo(knex.fn.now());
   });
-}
+};
 
-export async function down(knex) {
+exports.down = async function down(knex) {
   await knex.schema.dropTableIfExists('users');
   return knex.raw('DROP EXTENSION IF EXISTS "uuid-ossp";');
-}
+};

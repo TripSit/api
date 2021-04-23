@@ -1,8 +1,10 @@
-import knex from 'knex';
-import createValidator from 'express-joi-validation';
-import createServer from './server/index.js';
-import knexConfig from './knexfile.js';
-import createLogger from './logger.js';
+'use strict';
+
+const knex = require('knex');
+const createValidator = require('express-joi-validation');
+const createServer = require('./server');
+const knexConfig = require('./knexfile');
+const createLogger = require('./logger');
 
 const logger = createLogger();
 const server = createServer({

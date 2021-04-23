@@ -1,6 +1,8 @@
-import Joi from 'joi';
+'use strict';
 
-export default function createUserRoute(router, { db, validator, logger }) {
+const Joi = require('joi');
+
+module.exports = function createUserRoute(router, { db, validator, logger }) {
   router.post(
     '/user',
 
@@ -21,4 +23,4 @@ export default function createUserRoute(router, { db, validator, logger }) {
         res.status(400).json({ errors: 'It dun broke' });
       }),
   );
-}
+};

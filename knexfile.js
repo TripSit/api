@@ -1,12 +1,14 @@
-import stringcase from 'knex-stringcase';
-import {
+'use strict';
+
+const stringcase = require('knex-stringcase');
+const {
   POSTGRES_HOST,
   POSTGRES_USER,
   POSTGRES_PASSWORD,
   POSTGRES_DB,
-} from './env.js';
+} = require('./env');
 
-export default stringcase({
+module.exports = stringcase({
   client: 'pg',
   connection: {
     host: POSTGRES_HOST,

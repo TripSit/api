@@ -1,4 +1,6 @@
-export default function createDefaultErrorHandler({ logger }) {
+'use strict';
+
+module.exports = function createDefaultErrorHandler({ logger }) {
   return (err, req, res, next) => {
     if (res.headersSent) next(err);
     else {
