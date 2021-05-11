@@ -1,4 +1,9 @@
 {
+	"include": [
+		"./src/**/*.ts",
+		"./migrations/*.ts",
+		"./knexfile.ts"
+	],
   "compilerOptions": {
     "target": "ES2020",
     "module": "commonjs",
@@ -19,9 +24,8 @@
 			"server": ["server"],
 			"database": ["database"]
 		},
-    "types": [
-			"./src/common.d.ts"
-		],
+		"typeRoots": ["./src/types", "./node_modules/@types"],
+    "types": ["jest"],
     "esModuleInterop": true,
     "skipLibCheck": true,                     /* Skip type checking of declaration files. */
     "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */

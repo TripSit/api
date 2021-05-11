@@ -1,11 +1,9 @@
-'use strict';
+import { Knex } from 'knex';
 
-const sql = require('fake-tag');
+export async function up(knex: Knex) {
+	await knex.raw(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
 
-exports.up = async function up(knex) {
-	await knex.raw(sql`CREATE EXTENSION IF NOT EXISTS "uuid-ossp";`);
-
-	return knex.schema.createTable('users', table => {
+	return knex.schema.createTable('users', (table) => {
 		table
 			.uuid('id')
 			.primary()
@@ -25,7 +23,7 @@ exports.up = async function up(knex) {
 	});
 };
 
-exports.down = async function down(knex) {
+exports.down = async function down(knex: Knex) {
 	await knex.schema.dropTableIfExists('user');
-	return knex.raw(sql`DROP EXTENSION IF EXISTS "uuid-ossp";`);
+	return knex.raw(`DROP EXTENSION IF EXISTS "uuid-ossp";`);
 };

@@ -1,6 +1,7 @@
+import knex from 'knex';
+import knexConfig from '../knexfile';
+import { createValidator } from 'express-joi-validation';
 import { HTTP_PORT } from './env';
-import './yup-locale';
-import { initializeDb } from './models';
 import createServer from './server';
 import createLogger from './logger';
 
@@ -8,7 +9,8 @@ const logger = createLogger();
 
 const server = createServer({
 	logger,
-	knex: initializeDb(),
+	db: knex(knexConfig),
+	validator: createValidator(),
 });
 
 server.listen(HTTP_PORT, () => {

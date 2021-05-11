@@ -1,19 +1,26 @@
-import { Router } from 'express';
-import Yup from 'yup';
+// @ts-nocheck
+import { Express, Request, Response, Router } from 'express';
 import argon2 from 'argon2';
-import validate from '../../middleware/validate';
+import Joi from 'joi';
+import { Deps } from '../../../types';
 
-export default function loginRoutes(router: Router, { knex }: ServerDependencies) {
+type SessionReq = Request & {
+	session: {
+		uid: string;
+	};
+};
+
+export default function loginRoutes(router: Router, { db, validator }: Deps) {
 	async function validateCredentials(nick: string, password: string): Promise<string | null> {
-		return knex('users')
+		return db('users')
 			.select('id', 'password')
 			.where('nick', nick)
 			.then(({ id, password: hash }) => argon2.verify(hash, password)
 				.then((isValid => (isValid ? id : null))));
 	}
 
-	const nickValidator = Yup.string().max(32).required();
-	const passwordValidator = Yup.string().min(6).required();
+	const nickValidator = Joi.string().max(32).required();
+	const passwordValidator = Joi.string().min(6).required();
 
 	/**
 	 * POST /user
@@ -21,12 +28,10 @@ export default function loginRoutes(router: Router, { knex }: ServerDependencies
 	router.post(
 		'/user',
 
-		validate(Yup.object().shape({
+		validator.body(Joi.object().schema({
 			nick: nickValidator,
 			password: passwordValidator,
 		}).required()),
-
-		validateCredentials,
 
 		async (req, res) => {
 			const uid = await validateCredentials(req.body.nick, req.body.password);
@@ -45,18 +50,20 @@ export default function loginRoutes(router: Router, { knex }: ServerDependencies
 	router.post(
 		'/irc/user',
 
-		validate(Yup.object().shape({
+		validator.body(Joi.object().schema({
 			accountName: nickValidator,
 			passphrase: passwordValidator,
 		}).required()),
 
-		validateCredentials,
-
 		async (req, res) => {
-			res.json({
-				success: true,
-				accountName: req.body.accountName,
-			});
+			const uid = await validateCredentials(req.body.nick, req.body.password);
+			if (!uid) res.sendStatus(401);
+			else {
+				res.json({
+					success: true,
+					accountName: req.body.accountName,
+				});
+			}
 		},
 	);
 };

@@ -1,14 +1,13 @@
 import express from 'express';
-import Knex from 'knex';
-import { Logger } from 'winston';
 import router from './router';
-import defaultErrorHandlerMiddleware from './middleware/default-error-handler';
+import defaultErrorHandler from './middleware/default-error-handler';
+import { Deps } from '../types';
 
-export default function createServer(deps: ServerDependencies) {
+export default function createServer(deps: Deps) {
 	const server = express();
 
 	server.use(router(deps));
-	server.use(defaultErrorHandlerMiddleeware(deps));
+	server.use(defaultErrorHandler(deps));
 
 	return server;
 };
