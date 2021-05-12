@@ -7,7 +7,7 @@ export default function registerRoute(router: Router, { db, validator }: Deps) {
 	router.post(
 		'/user',
 
-		validator.body(Joi.object().schema({
+		validator.body(Joi.object({
 			nick: Joi.string().max(26).required(),
 			password: Joi.string().min(6).required(),
 		}).required()),

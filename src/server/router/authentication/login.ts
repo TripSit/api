@@ -28,7 +28,7 @@ export default function loginRoutes(router: Router, { db, validator }: Deps) {
 	router.post(
 		'/user',
 
-		validator.body(Joi.object().schema({
+		validator.body(Joi.object({
 			nick: nickValidator,
 			password: passwordValidator,
 		}).required()),
@@ -50,7 +50,7 @@ export default function loginRoutes(router: Router, { db, validator }: Deps) {
 	router.post(
 		'/irc/user',
 
-		validator.body(Joi.object().schema({
+		validator.body(Joi.object({
 			accountName: nickValidator,
 			passphrase: passwordValidator,
 		}).required()),
