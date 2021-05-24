@@ -4,9 +4,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 export const NODE_ENV: string = process.env.NODE_ENV!;
-
 export const API_BASE_URL: string = process.env.API_BASE_PATH!;
-export const AUTH_TOKEN_SECRET: string = process.env.AUTH_TOKEN_SECRET!;
 
 export const HTTP_PORT: number = parseInt(process.env.HTTP_PORT!, 10);
 export const LOG_PATH: string = path.resolve(process.env.LOG_PATH!);

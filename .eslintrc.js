@@ -1,40 +1,43 @@
 'use strict';
 
+const path = require('path');
+
 module.exports = {
 	root: true,
-	extends: 'airbnb-base',
+	extends: [
+		'airbnb-typescript/base',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:@typescript-eslint/recommended-requiring-type-checking',
+	],
 	parserOptions: {
-		sourceType: 'script',
-		ecmaVersion: 2020,
+		project: path.resolve('./tsconfig.json'),
 	},
 	env: { node: true },
-	rules: {
-		strict: [2, 'global'],
-		indent: [2, 'tab'],
-		'no-tabs': 0,
-		'arrow-parens': 0,
-		'consistent-return': 0,
-	},
+  rules: {
+    'import/prefer-default-export': 0,
+  },
 	overrides: [
 		{
 			files: [
-				'**/__tests__/*.js',
-				'**/__mocks__/*.js',
-				'tests/**/*.js',
+				'.eslintrc.js',
+				'jest.config.js',
 				'jest.setup.js',
 			],
-			plugins: ['jest'],
-			extends: ['plugin:jest/all'],
-			env: { 'jest/globals': true },
-			rules: {
-				'jest/no-hooks': 0,
-				'jest/prefer-expect-assertions': 0,
-				'jest/no-test-return-statement': 0,
-				'jest/require-top-level-describe': 0,
-				'jest/expect-expect': 0,
-				'jest/lowercase-name': 0,
-				'import/no-extraneous-dependencies': [2, { devDependencies: true }],
+			parserOptions: {
+				sourceType: 'script',
 			},
+			rules: {
+				strict: [2, 'global'],
+			},
+		},
+		{
+			files: [
+				'**/__tests__/*.ts',
+				'**/__mocks__/*.ts',
+				'tests/**/*.ts',
+			],
+			plugins: ['jest'],
+			env: { 'jest/globals': true },
 		},
 	],
 };
