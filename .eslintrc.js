@@ -39,5 +39,11 @@ module.exports = {
 			plugins: ['jest'],
 			env: { 'jest/globals': true },
 		},
+    {
+      files: ['./src/env.ts'],
+      rules: {
+        '@typescript-eslint/no-non-null-assertion': 0,
+      },
+    },
 	],
 };
