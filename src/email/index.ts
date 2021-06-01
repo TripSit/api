@@ -14,22 +14,23 @@ import {
 
 type TemplateName = 'ban-appeal' | 'verification';
 type MailOptions = Omit<SendMailOptions, 'html'>;
-
-const transport = createTransport({
-  secure: true,
-  host: EMAIL_HOST,
-  port: EMAIL_PORT,
-  auth: {
-    user: EMAIL_USER,
-    pass: EMAIL_PASSWORD,
-  },
-});
-
-export default async function createMailer(logger: Logger): Promise<<TemplateData>(
+export type Mailer = <TemplateData>(
   templateName: TemplateName,
-  emailMeta: MailOptions,
+  mailOptions: MailOptions,
   templateData: TemplateData,
-) => Promise<void>> {
+) => Promise<void>;
+
+export default async function createMailer(logger: Logger): Promise<Mailer> {
+  const transport = createTransport({
+    secure: true,
+    host: EMAIL_HOST,
+    port: EMAIL_PORT,
+    auth: {
+      user: EMAIL_USER,
+      pass: EMAIL_PASSWORD,
+    },
+  });
+
   const templates = await Promise.all([
     'ban-appeal',
     'verification',
