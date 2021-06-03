@@ -21,7 +21,7 @@ export type Mailer = <TemplateData>(
 ) => Promise<void>;
 
 export default async function createMailer(logger: Logger): Promise<Mailer> {
-  const transport = createTransport({
+  const transports = createTransport({
     secure: true,
     host: EMAIL_HOST,
     port: EMAIL_PORT,
@@ -31,13 +31,17 @@ export default async function createMailer(logger: Logger): Promise<Mailer> {
     },
   });
 
-  const templates = await Promise.all([
-    'ban-appeal',
-    'verification',
-  ]
-    .map((name) => fs.readFile(path.resolve(`./emails/${name}.hbs`))
-      .then(compile)
-      .then((template) => ({ name, template }))));
+  const templates = await fs.readdir(__dirname)
+    .then((files) => Promise.all(files
+      .filter((file) => file.endsWith('.hbs'))
+      .map((file) => fs.readFile(file)
+        .then(compile)
+        .then((template) => ({
+          template,
+          name: file
+            .replace(/^.+\//, '')
+            .replace(/\.hbs$/, '') as TemplateName,
+        })))));
 
   return async <TemplateData>(
     templateName: TemplateName,
@@ -47,7 +51,7 @@ export default async function createMailer(logger: Logger): Promise<Mailer> {
     const template = templates.find(({ name }) => name === templateName)?.template;
     if (!template) throw new Error(`Could not find template '${templateName}'.`);
 
-    await transport.sendMail({
+    await transports.sendMail({
       from: EMAIL_FROM,
       ...mailOptions,
       html: mjml2html(template(templateData)).html,

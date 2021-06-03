@@ -3,7 +3,8 @@
 		"./src/**/*.ts",
 		"./migrations/*.ts",
 		"./knexfile.ts",
-		"./config.json"
+		"./config.json",
+    "./jest.setup.ts"
 	],
   "compilerOptions": {
     "target": "ES2020",
