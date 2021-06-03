@@ -20,4 +20,4 @@ export default function authenticateMiddleare(
     res.sendStatus(401);
     return undefined;
   };
-};
+}
