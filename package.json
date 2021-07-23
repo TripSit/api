@@ -1,0 +1,29 @@
+{
+  "name": "@tripsit/api",
+  "private": true,
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "SevenCats <sevencats@tripsit.me>",
+  "license": "MIT",
+  "dependencies": {
+    "@graphql-tools/schema": "^7.1.5",
+    "apollo-server-express": "^3.0.0",
+    "apollo-server-plugin-response-cache": "^3.0.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "graphql-scalars": "^1.10.0",
+    "graphql-tag": "^2.12.5",
+    "helmet": "^4.6.0",
+    "winston": "^3.3.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.30.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.23.4",
+    "nodemon": "^2.0.12"
+  }
+}
