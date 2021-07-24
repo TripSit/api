@@ -2,6 +2,7 @@
 
 const { UserInputError } = require('apollo-server-express');
 const gql = require('graphql-tag');
+const { resolveSingleParamResolver } = require('./resolvers');
 
 exports.typeDefs = gql`
   extend type Query {
@@ -9,13 +10,21 @@ exports.typeDefs = gql`
   }
 
   extend type Mutation {
-    setUserBanStatus(params: UserQueryParams!, banStatus: Boolean!): User!
+    updateUser(searchParams: UserQueryParams!, updates: UserUpdates): User!
   }
 
   input UserQueryParams {
     id: UUID
     discordId: String
     nick: String
+  }
+
+  input UserUpdates {
+    discordId: String
+    nick: String
+    role: UserRole
+    banned: Boolean
+    lastActive: DateTime
   }
 
   type User {
@@ -39,29 +48,13 @@ exports.typeDefs = gql`
   }
 `;
 
-async function resolverUserQueryParams(params, User) {
-  const paramValueCount = Object.values(params).reduce((acc, a) => (a ? acc + 1 : acc), 0);
-  if (paramValueCount > 1) throw new UserInputError('Too many parameters provided');
-  if (paramValueCount < 1) throw new UserInputError('Must provide one parameter for user lookup');
-  const [k, v] = Object.entries(params).find(([k, v]) => v);
-  return User.findOne({ [k]: v });
-}
+exports.resolvers = {
+  'Query.user': [resolveSingleParamResolver, (root, { resolvedRecord: user }) => user],
 
-exports.resolver = {
-  Query: {
-    async user(root, { params }, { dataSources }) {
-      return resolverUserQueryParams(params, dataSources.db.User);
-    },
-  },
-  Mutation: {
-    async setUserBanStatus(root, { params, banStatus }, { dataSources }) {
-      const user = await resolverUserQueryParams(params, dataSources.db.User);
-      if (!user) throw new UserInputError('No user with provided ID found');
-      if (!banStatus && user.banned) throw new UserInputError('User is already banned');
-      if (banStatus && !user.banned) throw new UserInputError('User is not banned');
-      user.banned = banStatus;
-      await user.save();
-      return user;
-    },
-  },
+  'Mutation.updateUser': [resolveSingleParamResolver, async (root, { resolvedRecord: user, updates }) => {
+    if (!user) throw new UserInputError('No user exists with provided ID');
+    Object.assign(user, updates);
+    await user.save();
+    return user;
+  }],
 };

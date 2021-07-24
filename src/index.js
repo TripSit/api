@@ -1,14 +1,15 @@
 'use strict';
 
-require('dotenv').config();
 const { createConnection } = require('@tripsit/db');
+const { createValidator } = require('express-joi-validation');
 const createLogger = require('./logger');
 const createServer = require('./create-server');
 
 const logger = createLogger();
+const validator = createValidator();
 
 createConnection()
-  .then(() => createServer({ logger }))
+  .then(() => createServer({ logger, validator }))
   .catch(ex => {
     logger.error(ex);
     console.error('Unable to initialize API.');
