@@ -6,12 +6,13 @@ const createLogger = require('./logger');
 const createServer = require('./create-server');
 
 const logger = createLogger();
-const validator = createValidator();
 
 createConnection()
-  .then(() => createServer({ logger, validator }))
+  .then(() => createServer({
+    logger,
+    validator: createValidator(),
+  }))
   .catch(ex => {
-    logger.error(ex);
-    console.error('Unable to initialize API.');
+    logger.error('Unable to initialize API', ex);
     process.exit(1);
   });
