@@ -2,6 +2,7 @@
 
 module.exports = function context({ req }) {
   return {
-    sessionToken: req.get('Authorization').replace(/^Bearer\s/, '') || null,
+    appToken: req.get('Authorization').replace(/^Bearer\s/, '') || null,
+    userSessionId: req.session.userId,
   };
 };

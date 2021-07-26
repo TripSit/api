@@ -9,10 +9,12 @@ const createRouter = require('./router');
 const { REDIS_PORT, SESSION_SECRET } = require('./env');
 
 module.exports = function createExpressServer(deps) {
+  const { logger } = deps;
+
   const app = express();
   app.use(helmet());
 
-  // Session store
+  // Session store for user, not app authentication
   const SessionStore = connectRedis(session);
   app.use(session({
     store: new SessionStore({
@@ -25,6 +27,15 @@ module.exports = function createExpressServer(deps) {
 
   // Apply routes
   app.use('/api', createRouter(deps));
+
+  // Default error handler
+  app.use((req, res, next, ex) => {
+    if (res.headersSent) next(ex);
+    else {
+      logger.error(ex);
+      res.sendStatus(500);
+    }
+  });
 
   return app;
 };
