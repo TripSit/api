@@ -1,10 +1,21 @@
 'use strict';
 
-const { User, Drug } = require('@tripsit/db');
+const {
+  User,
+  UserBan,
+  UserNote,
+  Drug,
+  DrugName,
+  DrugCategory,
+} = require('@tripsit/db');
 
 module.exports = function createDbDataSource() {
   return {
     User,
+    UserBan,
+    UserNote,
     Drug,
+    DrugName,
+    DrugCategory,
   };
 };
