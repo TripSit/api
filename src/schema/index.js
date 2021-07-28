@@ -1,20 +1,19 @@
 'use strict';
 
 const { makeExecutableSchema } = require('@graphql-tools/schema');
-const { composeResolvers } = require('@graphql-tools/resolvers-composition');
 const gql = require('graphql-tag');
-const scalars = require('./scalars');
-const drug = require('./drug');
+const scalarsSchema = require('./scalars');
+const userSchema = require('./user');
 
-const components = [scalars, drug];
+const partials = [scalarsSchema, userSchema];
 
 const baseTypeDefs = gql`
   type Query {
-    _empty: String
+    _empty: Void
   }
 
   type Mutation {
-    _empty: String
+    _empty: Void
   }
 
   directive @cacheControl(
@@ -30,12 +29,14 @@ const baseTypeDefs = gql`
 
 module.exports = function createSchema() {
   return makeExecutableSchema({
-    typeDefs: [baseTypeDefs].concat(components.map(component => component.typeDefs)),
-    resolvers: components
-      .map(component => component.resolvers)
-      .reduce((acc, resolvers) => composeResolvers(acc, resolvers), {
-        Query: {},
-        Mutation: {},
-      }),
+    typeDefs: [baseTypeDefs].concat(partials.map(partial => partial.typeDefs)),
+    resolvers: {
+      ...scalarsSchema.resolvers,
+      ...userSchema.resolvers,
+      Query: {},
+      Mutation: {
+        ...userSchema.resolvers.Mutation,
+      },
+    },
   });
 };

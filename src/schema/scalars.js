@@ -4,8 +4,8 @@ const gql = require('graphql-tag');
 const {
   VoidResolver,
   UUIDResolver,
-  NonNegativeFloatResolver,
-  NonNegativeIntResolver,
+  UnsignedIntResolver,
+  UnsignedFloatResolver,
   DateTimeResolver,
   DurationResolver,
   EmailAddressResolver,
@@ -15,8 +15,8 @@ const {
 exports.typeDefs = gql`
   scalar Void
   scalar UUID
-  scalar NonNegativeInt
-  scalar NonNegativeFloat
+  scalar UnsignedInt
+  scalar UnsignedFloat
   scalar DateTime
   scalar Duration
   scalar EmailAddress
@@ -26,8 +26,8 @@ exports.typeDefs = gql`
 exports.resolvers = {
   Void: VoidResolver,
   UUID: UUIDResolver,
-  NonNegativeInt: NonNegativeIntResolver,
-  NonNegativeFloat: NonNegativeFloatResolver,
+  UnsignedInt: UnsignedIntResolver,
+  UnsignedFloat: UnsignedFloatResolver,
   DateTime: DateTimeResolver,
   Duration: DurationResolver,
   EmailAddress: EmailAddressResolver,

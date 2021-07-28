@@ -1,44 +1,20 @@
 'use strict';
 
-const { UserInputError } = require('apollo-server-express');
 const gql = require('graphql-tag');
-const {
-  resolveSingleParamResolver,
-  sessionUserResolver,
-  hasPriviledgesResolver,
-} = require('./resolvers');
+const argon2 = require('argon2');
 
 exports.typeDefs = gql`
   extend type Query {
-    user(params: UserQueryParams!): User
-    users(page: Pageination!): [User!]!
+    users(params: UsersQueryInput): [User!]!
   }
 
   extend type Mutation {
-    updateUser(searchParams: UserQueryParams!, updates: UserUpdates): User!
-  }
-
-  input UserQueryParams {
-    id: UUID
-    discordId: String
-    nick: String
-  }
-
-  input UserUpdates {
-    discordId: String
-    nick: String
-    role: UserRole
-    banned: Boolean
-    lastActive: DateTime
+    createUser(user: CreateUserInput): User!
   }
 
   type User {
     id: ID!
-    discordId: String
     nick: String!
-    role: UserRole!
-    banned: Boolean!
-    lastActive: DateTime!
     createdAt: DateTime!
   }
 
@@ -51,31 +27,53 @@ exports.typeDefs = gql`
     OPERATOR
     FOUNDER
   }
+
+  type UserNote {
+    id: ID!
+    issuedBy: User!
+    note: String!
+    type: UserNoteType
+    createdAt: DateTime!
+  }
+
+  enum UserNoteType {
+    BAN
+    QUIET
+    WARNING
+  }
+
+  input CreateUserInput {
+    nick: String!
+    password: String!
+  }
+
+  input UsersQueryInput {
+    page: UnsignedInt
+    nick: String
+  }
 `;
 
 exports.resolvers = {
-  'Query.user': [
-    sessionUserResolver(),
-    hasPriviledgesResolver('moderator'),
-    resolveSingleParamResolver('User'),
-    (root, { resolvedRecord: user }) => user,
-  ],
-
-  'Query.users': [
-    sessionUserResolver(),
-    hasPriviledgesResolver('moderator'),
-    async (root, { page }, { dataSources }) => dataSources.db.User.find(page),
-  ],
-
-  'Mutation.updateUser': [
-    sessionUserResolver(),
-    hasPriviledgesResolver('moderator'),
-    resolveSingleParamResolver('User'),
-    async (root, { resolvedRecord: user, updates }) => {
-      if (!user) throw new UserInputError('No user exists with provided ID');
-      Object.assign(user, updates);
-      await user.save();
-      return user;
+  Query: {
+    async users(root, { params }, { dataSources }) {
+      const query = dataSources.db('users')
+        .select('*')
+        .limit(50)
+        .offset((params?.page || 0) * 50);
+      if (params?.nick) query.where('nick', 'like', `%${params?.nick.trim()}%`);
+      return query;
     },
-  ],
+  },
+
+  Mutation: {
+    async createUser(root, { user }, { dataSources }) {
+      return dataSources.db('users')
+        .insert({
+          ...user,
+          password: await argon2.hash(user.password),
+        })
+        .returning(['id', 'nick', 'createdAt'])
+        .then(([newUser]) => newUser);
+    },
+  },
 };

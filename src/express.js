@@ -2,6 +2,7 @@
 
 const express = require('express');
 const helmet = require('helmet');
+const cors = require('cors');
 const session = require('express-session');
 const redis = require('redis');
 const connectRedis = require('connect-redis');
@@ -13,6 +14,7 @@ module.exports = function createExpressServer(deps) {
 
   const app = express();
   app.use(helmet());
+  app.use(cors());
 
   // Session store for user, not app authentication
   const SessionStore = connectRedis(session);

@@ -2,8 +2,8 @@
 
 const createDbDataSource = require('./db');
 
-module.exports = function createDataSources() {
+module.exports = function createDataSources({ db }) {
   return {
-    db: createDbDataSource(),
+    db: createDbDataSource(db),
   };
 };
