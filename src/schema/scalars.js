@@ -21,6 +21,11 @@ exports.typeDefs = gql`
   scalar Duration
   scalar EmailAddress
   scalar URL
+
+  type MinMax {
+    min: UnsignedFloat
+    max: UnsignedFloat
+  }
 `;
 
 exports.resolvers = {

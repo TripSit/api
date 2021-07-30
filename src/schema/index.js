@@ -4,8 +4,10 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const gql = require('graphql-tag');
 const scalarsSchema = require('./scalars');
 const userSchema = require('./user');
+const drugSchema = require('./drug');
 
-const partials = [scalarsSchema, userSchema];
+const partials = [scalarsSchema, userSchema, drugSchema]
+  .map(schema => schema.typeDefs);
 
 const baseTypeDefs = gql`
   type Query {
@@ -29,13 +31,17 @@ const baseTypeDefs = gql`
 
 module.exports = function createSchema() {
   return makeExecutableSchema({
-    typeDefs: [baseTypeDefs].concat(partials.map(partial => partial.typeDefs)),
+    typeDefs: [baseTypeDefs, ...partials],
     resolvers: {
       ...scalarsSchema.resolvers,
       ...userSchema.resolvers,
-      Query: {},
+      ...drugSchema.resolvers,
+      Query: {
+        ...drugSchema.resolvers.Query,
+      },
       Mutation: {
         ...userSchema.resolvers.Mutation,
+        ...drugSchema.resolvers.Mutation,
       },
     },
   });
