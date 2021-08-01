@@ -10,10 +10,13 @@ exports.typeDefs = gql`
   }
 
   extend type Mutation {
-    updateDrug(id: UUID!, updates: DrugUpates!): Drug!
+    createDrug(drug: DrugInput!): Void
+    updateDrug(id: UUID!, drug: DrugInput!): Drug!
+    deleteDrug(id: UUID!): Void
+    deleteDrugRoa(id: UUID!): Void
   }
 
-  input DrugUpates {
+  input DrugInput {
     name: String!
   }
 
@@ -27,11 +30,6 @@ exports.typeDefs = gql`
     roas: [DrugRoa!]!
     updatedAt: DateTime!
     createdAt: DateTime!
-  }
-
-  type DrugAlias {
-    id: ID!
-    text: String!
   }
 
   type DrugRoa {
@@ -74,41 +72,39 @@ exports.typeDefs = gql`
 exports.resolvers = {
   Query: {
     async drug(parent, { id }, { dataSources }) {
-      return dataSources.db.knex('drugs')
-        .where({ id })
-        .first();
+      return dataSources.db.drug.findById(id);
     },
 
     async drugs(parent, params, { dataSources }) {
-      return dataSources.db.knex('drugs')
-        .select('*')
-        .orderBy('name', 'ASC');
+      return dataSources.db.drug.find();
     },
   },
 
   Mutation: {
-    async updateDrug(parent, { id, updates }, { dataSources }) {
-      return dataSources.db.knex('drugs')
-        .update(updates)
-        .where({ id })
-        .returning('*')
-        .then(([updatedDrug]) => updatedDrug);
+    async createDrug(parent, { drug }, { dataSources }) {
+      return dataSources.db.drug.create(drug);
+    },
+
+    async updateDrug(parent, { id, drug }, { dataSources }) {
+      return dataSources.db.drug.update(id, drug);
+    },
+
+    async deleteDrug(parent, { id }, { dataSources }) {
+      await dataSources.db.drug.delete(id);
+    },
+
+    async deleteDrugRoa(parent, { id }, { dataSources }) {
+      await dataSources.db.drug.deleteRoa(id);
     },
   },
 
   Drug: {
     async aliases(drug, params, { dataSources }) {
-      return dataSources.db.knex('drug_aliases')
-        .select('text')
-        .where('drug_id', drug.id)
-        .orderBy('text', 'ASC')
-        .then(records => records.map(record => record.text));
+      return dataSources.db.user.aliases(drug.id);
     },
 
     async roas(drug, params, { dataSources }) {
-      return dataSources.db.knex('drug_roas')
-        .select('*')
-        .where('drug_id', drug.id);
+      return dataSources.db.drug.roas(drug.id);
     },
 
     psychonautwikiUrl(drug) {

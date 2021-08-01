@@ -34,14 +34,15 @@ module.exports = function createSchema() {
     typeDefs: [baseTypeDefs, ...partials],
     resolvers: {
       ...scalarsSchema.resolvers,
-      ...userSchema.resolvers,
       ...drugSchema.resolvers,
+      ...userSchema.resolvers,
       Query: {
         ...drugSchema.resolvers.Query,
+        ...userSchema.resolvers.Query,
       },
       Mutation: {
-        ...userSchema.resolvers.Mutation,
         ...drugSchema.resolvers.Mutation,
+        ...userSchema.resolvers.Mutation,
       },
     },
   });

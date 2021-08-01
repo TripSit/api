@@ -1,7 +1,6 @@
 'use strict';
 
 const gql = require('graphql-tag');
-const argon2 = require('argon2');
 
 exports.typeDefs = gql`
   extend type Query {
@@ -56,24 +55,13 @@ exports.typeDefs = gql`
 exports.resolvers = {
   Query: {
     async users(root, { params }, { dataSources }) {
-      const query = dataSources.db('users')
-        .select('*')
-        .limit(50)
-        .offset((params?.page || 0) * 50);
-      if (params?.nick) query.where('nick', 'like', `%${params?.nick.trim()}%`);
-      return query;
+      return dataSources.db.user.find({ nick: params.nick });
     },
   },
 
   Mutation: {
     async createUser(root, { user }, { dataSources }) {
-      return dataSources.db('users')
-        .insert({
-          ...user,
-          password: await argon2.hash(user.password),
-        })
-        .returning(['id', 'nick', 'createdAt'])
-        .then(([newUser]) => newUser);
+      return dataSources.db.user.create(user);
     },
   },
 };

@@ -14,7 +14,7 @@ createServer({
   validator: createValidator(),
 })
   .then(() => {
-    logger.info(`API service running on port ${HTTP_PORT}`)
+    logger.info(`API service running on port ${HTTP_PORT}`);
   })
   .catch(ex => {
     logger.error('Unable to initialize API', ex);
