@@ -1,7 +1,7 @@
 'use strict';
 
 const { ApolloServer } = require('apollo-server-express');
-const responseCachePlugin = require('apollo-server-plugin-response-cache');
+const responseCachePlugin = require('apollo-server-plugin-response-cache').default;
 const createExpressServer = require('./express');
 const createSchema = require('./schema');
 const dataSources = require('./data-sources');

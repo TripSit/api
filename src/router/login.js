@@ -1,23 +1,24 @@
 'use strict';
 
-const { User } = require('@tripsit/db');
 const Joi = require('joi');
 
-module.exports = function applyLoginRoute(router, { validator }) {
+module.exports = function applyLoginRoute(router, { db, validator }) {
   router.post(
     '/login',
 
     validator.body(Joi.object({
-      nick: Joi.string().required(),
+      nick: Joi.string().required().trim(),
       password: Joi.string().required(),
     }).required()),
 
     async (req, res) => {
-      const user = await User.findOne({ nick: req.body.nick });
-      if (!user || !(await user.authorize(req.body.password))) res.sendStatus(401);
-      else {
-        req.session.userId = user.id;
-        res.sendStatus(200);
+      const user = await db.user.find({ nick: req.body.nick }).first();
+      console.log(res);
+      if (!user || !(await db.user.authenticate(req.body.nick, req.body.password))) {
+        res.status(401).send();
+      } else {
+        req.session.uid = user.id;
+        res.status(200).send();
       }
     },
   );
