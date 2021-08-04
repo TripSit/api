@@ -6,7 +6,7 @@ const cors = require('cors');
 const session = require('express-session');
 const redis = require('redis');
 const connectRedis = require('connect-redis');
-const createRouter = require('./router');
+const router = require('./router');
 const { REDIS_PORT, SESSION_SECRET } = require('./env');
 
 module.exports = function createExpressServer(deps) {
@@ -28,7 +28,7 @@ module.exports = function createExpressServer(deps) {
   }));
 
   // Apply routes
-  app.use('/api', createRouter(deps));
+  app.use('/api', router(deps));
 
   // Default error handler
   app.use((req, res, next, ex) => {
