@@ -100,7 +100,7 @@ exports.resolvers = {
 
   Drug: {
     async aliases(drug, params, { dataSources }) {
-      return dataSources.db.user.aliases(drug.id);
+      return dataSources.db.drug.aliases(drug.id);
     },
 
     async roas(drug, params, { dataSources }) {
