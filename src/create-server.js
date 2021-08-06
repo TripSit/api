@@ -26,6 +26,7 @@ module.exports = async function createServer(deps) {
       credentials: true,
     },
   });
+
   return new Promise((resolve) => {
     app.listen({ port: HTTP_PORT }, () => resolve({ server, app }));
   });

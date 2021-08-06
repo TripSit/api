@@ -12,13 +12,18 @@ module.exports = function applyLoginRoute(router, { db, validator }) {
     }).required()),
 
     async (req, res) => {
-      const user = await db.user.find({ nick: req.body.nick }).first();
-      console.log(res);
-      if (!user || !(await db.user.authenticate(req.body.nick, req.body.password))) {
+      const user = await db.user
+        .find({ nick: req.body.nick })
+        .select('id', 'nick', 'createdAt')
+        .first();
+      if (!user || !(await db.user.authenticate({ nick: req.body.nick }, req.body.password))) {
         res.status(401).send();
       } else {
         req.session.uid = user.id;
-        res.status(200).send();
+        res.json(user);
+        db.knex('users')
+          .update({ lastActive: Date.now() })
+          .where({ id: user.id });
       }
     },
   );

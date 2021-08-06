@@ -25,8 +25,8 @@ exports.typeDefs = gql`
     name: String!
     aliases: [String!]
     summary: String
-    psychonautwikiUrl: URL!
-    errowidExperiencesUrl: URL!
+    psychonautwikiUrl: URL
+    errowidExperiencesUrl: URL
     roas: [DrugRoa!]!
     updatedAt: DateTime!
     createdAt: DateTime!
@@ -108,7 +108,9 @@ exports.resolvers = {
     },
 
     psychonautwikiUrl(drug) {
-      return `https://psychonaughtwiki.org/wiki/${drug.psychonaughtwikiSlug}`;
+      return drug.psychonaughtwikiSlug
+        ? `https://psychonaughtwiki.org/wiki/${drug.psychonaughtwikiSlug}`
+        : null;
     },
   },
 
