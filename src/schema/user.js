@@ -1,5 +1,6 @@
 'use strict';
 
+const { ForbiddenError } = require('apollo-server-express');
 const gql = require('graphql-tag');
 
 exports.typeDefs = gql`
@@ -7,18 +8,22 @@ exports.typeDefs = gql`
     users(query: String): [User!]!
     user(userId: UUID!): User
     userRoles: [UserRole!]!
+    noteTypes: [UserNoteType!]!
   }
 
   extend type Mutation {
     createUser(user: CreateUserInput): User!
     addUserRole(userId: UUID!, role: String!): UserRole!
     removeUserRole(userId: UUID!, role: String!): Void
+    addUserNote(note: CreateUserNoteInput!): UserNote!
+    removeUserNote(noteId: UUID!): Void
   }
 
   type User {
     id: ID!
     nick: String!
     roles: [UserRole!]!
+    notes: [UserNote!]!
     createdAt: DateTime!
   }
 
@@ -31,16 +36,17 @@ exports.typeDefs = gql`
 
   type UserNote {
     id: ID!
+    content: String!
+    type: UserNoteType!
     issuedBy: User!
-    note: String!
-    type: UserNoteType
     createdAt: DateTime!
   }
 
   enum UserNoteType {
-    BAN
-    QUIET
-    WARNING
+    ban
+    quiet
+    warning
+    generic
   }
 
   input CreateUserInput {
@@ -51,6 +57,11 @@ exports.typeDefs = gql`
   input UsersQueryInput {
     page: UnsignedInt
     nick: String
+  }
+
+  input CreateUserNoteInput {
+    content: String!
+    type: UserNoteType!
   }
 `;
 
@@ -70,6 +81,15 @@ exports.resolvers = {
     async userRoles(root, params, { dataSources }) {
       return dataSources.db.knex('user_roles')
         .orderBy('name');
+    },
+
+    noteTypes() {
+      return [
+        'ban',
+        'quiet',
+        'warning',
+        'generic',
+      ];
     },
   },
 
@@ -99,6 +119,24 @@ exports.resolvers = {
         .where('user_id', userId)
         .where('user_role_id', userRoleId);
     },
+
+    async createUserNote(root, { note }, { dataSources, userSessionId }) {
+      return dataSources.db
+        .knex('user_notes')
+        .insert({
+          ...note,
+          issuedBy: userSessionId,
+        })
+        .returning('*')
+        .then(([record]) => record);
+    },
+
+    async removeUserNote(root, { noteId }, { dataSources }) {
+      await dataSources.db
+        .knex('user_notes')
+        .where('id', noteId)
+        .update('deleted', true);
+    },
   },
 
   User: {
@@ -108,6 +146,22 @@ exports.resolvers = {
         .innerJoin('user_role_users', 'user_roles.id', 'user_role_users.user_role_id')
         .innerJoin('users', 'user_role_users.user_id', 'users.id')
         .where('users.id', user.id);
+    },
+
+    async notes(user, params, { dataSources }) {
+      return dataSources.db
+        .knex('user_notes')
+        .where('user_id', user.id)
+        .where('deleted', false);
+    },
+  },
+
+  UserNote: {
+    async issuedBy(note, params, { dataSources }) {
+      return dataSources.db
+        .knex('users')
+        .where('id', note.issuedBy)
+        .first();
     },
   },
 };
