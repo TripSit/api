@@ -6,7 +6,7 @@ const { minMaxResolver } = require('./resolvers');
 exports.typeDefs = gql`
   extend type Query {
     drug(id: UUID!): Drug!
-    drugs: [Drug!]!
+    drugs(query: String): [Drug!]!
   }
 
   extend type Mutation {
@@ -71,31 +71,34 @@ exports.typeDefs = gql`
 
 exports.resolvers = {
   Query: {
-    async drug(parent, { id }, { dataSources }) {
+    async drug(root, { id }, { dataSources }) {
       return dataSources.db.knex('drugs')
         .where('id', id)
         .first();
     },
 
-    async drugs(parent, params, { dataSources }) {
-      return dataSources.db.drug.find();
+    async drugs(root, { query }, { dataSources }) {
+      const sqlQuery = dataSources.db.knex('drugs')
+        .orderBy('name');
+      if (!query) sqlQuery.where('name', 'like', query);
+      return sqlQuery;
     },
   },
 
   Mutation: {
-    async createDrug(parent, { drug }, { dataSources }) {
+    async createDrug(root, { drug }, { dataSources }) {
       return dataSources.db.drug.create(drug);
     },
 
-    async updateDrug(parent, { id, drug }, { dataSources }) {
+    async updateDrug(root, { id, drug }, { dataSources }) {
       return dataSources.db.drug.update(id, drug);
     },
 
-    async deleteDrug(parent, { id }, { dataSources }) {
+    async deleteDrug(root, { id }, { dataSources }) {
       await dataSources.db.drug.delete(id);
     },
 
-    async deleteDrugRoa(parent, { id }, { dataSources }) {
+    async deleteDrugRoa(root, { id }, { dataSources }) {
       await dataSources.db.drug.deleteRoa(id);
     },
   },

@@ -4,13 +4,14 @@ const gql = require('graphql-tag');
 
 exports.typeDefs = gql`
   extend type Query {
-    users(params: UsersQueryInput): [User!]!
+    users(query: String): [User!]!
     user(userId: UUID!): User
+    userRoles: [UserRole!]!
   }
 
   extend type Mutation {
     createUser(user: CreateUserInput): User!
-    addUserRole(userId: UUID!, role: String!): Void
+    addUserRole(userId: UUID!, role: String!): UserRole!
     removeUserRole(userId: UUID!, role: String!): Void
   }
 
@@ -55,12 +56,20 @@ exports.typeDefs = gql`
 
 exports.resolvers = {
   Query: {
-    async users(root, { params }, { dataSources }) {
-      return dataSources.db.user.find({ nick: params.nick });
+    async users(root, { query }, { dataSources }) {
+      const sqlQuery = dataSources.db.knex('users')
+        .orderBy('nick');
+      if (query) sqlQuery.where('nick', 'like', query);
+      return sqlQuery;
     },
 
     async user(root, { userId }, { dataSources }) {
       return dataSources.db.user.find({ id: userId });
+    },
+
+    async userRoles(root, params, { dataSources }) {
+      return dataSources.db.knex('user_roles')
+        .orderBy('name');
     },
   },
 
@@ -75,7 +84,9 @@ exports.resolvers = {
         .where('user_role_id', userRoleId);
       if (alreadyHasRole) throw new Error('User already possesses role');
       return dataSources.db.knex('user_role_users')
-        .insert({ userId, userRoleId });
+        .insert({ userId, userRoleId })
+        .returning('*')
+        .then(([userRole]) => userRole);
     },
 
     async removeUserRole(root, { userId, userRoleId }, { dataSources }) {
@@ -96,8 +107,7 @@ exports.resolvers = {
         .knex('user_roles')
         .innerJoin('user_role_users', 'user_roles.id', 'user_role_users.user_role_id')
         .innerJoin('users', 'user_role_users.user_id', 'users.id')
-        .where('users.id', user.id)
-        .then(userRoles => userRoles.map(userRole => userRole.name));
+        .where('users.id', user.id);
     },
   },
 };
