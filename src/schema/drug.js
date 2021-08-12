@@ -5,8 +5,8 @@ const { minMaxResolver } = require('./resolvers');
 
 exports.typeDefs = gql`
   extend type Query {
-    drug(id: UUID!): Drug
-    drugs: [Drug!]
+    drug(id: UUID!): Drug!
+    drugs: [Drug!]!
   }
 
   extend type Mutation {
@@ -34,7 +34,7 @@ exports.typeDefs = gql`
 
   type DrugRoa {
     id: ID!
-    route: DrugRoute!
+    route: Roa!
 
     doseThreshold: UnsignedFloat
     doseLight: UnsignedFloat
@@ -54,7 +54,7 @@ exports.typeDefs = gql`
     createdAt: DateTime!
   }
 
-  enum DrugRoute {
+  enum Roa {
     oral
     insufflated
     inhaled
@@ -63,7 +63,7 @@ exports.typeDefs = gql`
     buccal
     rectal
     intramuscular
-    intravenious
+    intravenous
     subcutanious
     transdermal
   }
@@ -72,7 +72,9 @@ exports.typeDefs = gql`
 exports.resolvers = {
   Query: {
     async drug(parent, { id }, { dataSources }) {
-      return dataSources.db.drug.findById(id);
+      return dataSources.db.knex('drugs')
+        .where('id', id)
+        .first();
     },
 
     async drugs(parent, params, { dataSources }) {
