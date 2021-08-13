@@ -1,6 +1,5 @@
 'use strict';
 
-const { ForbiddenError } = require('apollo-server-express');
 const gql = require('graphql-tag');
 
 exports.typeDefs = gql`
@@ -15,7 +14,7 @@ exports.typeDefs = gql`
     createUser(user: CreateUserInput): User!
     addUserRole(userId: UUID!, role: String!): UserRole!
     removeUserRole(userId: UUID!, role: String!): Void
-    addUserNote(note: CreateUserNoteInput!): UserNote!
+    createUserNote(note: CreateUserNoteInput!): UserNote!
     removeUserNote(noteId: UUID!): Void
   }
 
@@ -145,6 +144,7 @@ exports.resolvers = {
         .knex('user_roles')
         .innerJoin('user_role_users', 'user_roles.id', 'user_role_users.user_role_id')
         .innerJoin('users', 'user_role_users.user_id', 'users.id')
+        .select('user_roles.*')
         .where('users.id', user.id);
     },
 

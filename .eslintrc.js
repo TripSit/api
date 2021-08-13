@@ -18,7 +18,10 @@ module.exports = {
   },
   overrides: [
     {
-      files: ['**/__tests__/*.test.js'],
+      files: [
+        './tests/**/*.js',
+        '**/__tests__/*.test.js',
+      ],
       extends: [
         'airbnb-base',
         'plugin:jest/recommended',
@@ -31,6 +34,7 @@ module.exports = {
       },
       rules: {
         strict: [2, 'global'],
+        'jest/no-disabled-tests': 0,
       },
     },
   ],
