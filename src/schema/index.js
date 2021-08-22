@@ -5,8 +5,9 @@ const gql = require('graphql-tag');
 const scalarsSchema = require('./scalars');
 const userSchema = require('./user');
 const drugSchema = require('./drug');
+const articleSchema = require('./article');
 
-const partials = [scalarsSchema, userSchema, drugSchema]
+const partials = [scalarsSchema, userSchema, drugSchema, articleSchema]
   .map(schema => schema.typeDefs);
 
 const baseTypeDefs = gql`

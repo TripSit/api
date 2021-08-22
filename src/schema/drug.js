@@ -28,6 +28,7 @@ exports.typeDefs = gql`
     psychonautwikiUrl: URL
     errowidExperiencesUrl: URL
     roas: [DrugRoa!]!
+    articles: [Article!]!
     updatedAt: DateTime!
     createdAt: DateTime!
   }
@@ -110,6 +111,10 @@ exports.resolvers = {
 
     async roas(drug, params, { dataSources }) {
       return dataSources.db.drug.roas(drug.id);
+    },
+
+    async articles(drug, params, { dataSources }) {
+      return dataSources.db.drug.articles(drug.id);
     },
 
     psychonautwikiUrl(drug) {
