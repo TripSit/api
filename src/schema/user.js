@@ -5,13 +5,14 @@ const gql = require('graphql-tag');
 exports.typeDefs = gql`
   extend type Query {
     users(query: String): [User!]!
-    user(userId: UUID!): User
+    user(userId: UUID!): User!
     userRoles: [UserRole!]!
     noteTypes: [UserNoteType!]!
   }
 
   extend type Mutation {
     createUser(user: CreateUserInput): User!
+    updateUser(userId: UUID!, updates: UserUpdateInput!): User!
     addUserRole(userId: UUID!, role: String!): UserRole!
     removeUserRole(userId: UUID!, role: String!): Void
     createUserNote(note: CreateUserNoteInput!): UserNote!
@@ -23,6 +24,7 @@ exports.typeDefs = gql`
     nick: String!
     roles: [UserRole!]!
     notes: [UserNote!]!
+    lastActive: DateTime!
     createdAt: DateTime!
   }
 
@@ -51,6 +53,10 @@ exports.typeDefs = gql`
   input CreateUserInput {
     nick: String!
     password: String!
+  }
+
+  input UserUpdateInput {
+    nick: String
   }
 
   input UsersQueryInput {
