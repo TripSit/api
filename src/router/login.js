@@ -2,10 +2,8 @@
 
 const Joi = require('joi');
 
-module.exports = function applyLoginRoute(router, { db, validator }) {
-  router.post(
-    '/login',
-
+module.exports = function loginRoute({ db, validator }) {
+  return [
     validator.body(Joi.object({
       nick: Joi.string().required().trim(),
       password: Joi.string().required(),
@@ -26,5 +24,5 @@ module.exports = function applyLoginRoute(router, { db, validator }) {
           .where({ id: user.id });
       }
     },
-  );
+  ];
 };

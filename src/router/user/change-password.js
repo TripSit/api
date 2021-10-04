@@ -3,12 +3,10 @@
 const Joi = require('joi');
 const argon = require('argon2');
 
-module.exports = function applyChangePasswordRoute(router, { db, validator }) {
-  router.post(
-    '/user/:id/change-password',
-
+module.exports = function applyChangePasswordRoute({ db, validator }) {
+  return [
     validator.params(Joi.object({
-      id: Joi.string().uuid().required(),
+      userId: Joi.string().uuid().required(),
     }).required()),
 
     validator.body(Joi.object({
@@ -25,8 +23,8 @@ module.exports = function applyChangePasswordRoute(router, { db, validator }) {
         .select('password')
         .where('id', req.params.id)
         .first();
-      const isAuthenticated = await argon.verify(password, req.body.currentPassword);
 
+      const isAuthenticated = await argon.verify(password, req.body.currentPassword);
       if (!isAuthenticated) res.status(401).send();
       else {
         await db.knex('users')
@@ -35,5 +33,5 @@ module.exports = function applyChangePasswordRoute(router, { db, validator }) {
         res.status(200).send();
       }
     },
-  );
+  ];
 };
